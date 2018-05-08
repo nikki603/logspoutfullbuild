@@ -1,0 +1,20 @@
+machine:
+  environment:
+    GO15VENDOREXPERIMENT: 1
+
+checkout:
+  post:
+    - rm -rf ~/.go_workspace/src/github.com/remind101
+    - mkdir -p ~/.go_workspace/src/github.com/remind101
+    - cp -R ~/logspout-kinesis ~/.go_workspace/src/github.com/remind101/logspout-kinesis
+
+dependencies:
+  override:
+    - go install -a -race std
+    - go version
+    - echo $GO15VENDOREXPERIMENT
+
+test:
+  override:
+    - cd ~/.go_workspace/src/github.com/remind101/logspout-kinesis && go test -race -short $(go list ./... | grep -v /vendor/)
+    - cd ~/.go_workspace/src/github.com/remind101/logspout-kinesis && go vet $(go list ./... | grep -v /vendor/)
